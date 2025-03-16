@@ -90,8 +90,8 @@
 
     <div class="slider-container">
         <label for="humor">Humor Level:</label>
-        <input type="range" id="humor" min="0" max="100" value="90">
-        <span id="humor-value">90%</span>
+        <input type="range" id="humor" min="0" max="100" value="20">
+        <span id="humor-value">20%</span>
     </div>
 
     <div class="input-container">
@@ -110,6 +110,24 @@
         humorSlider.addEventListener('input', () => {
             humorValue.textContent = `${humorSlider.value}%`;
         });
+
+        const seriousReplies = [
+            "Affirmative.",
+            "Roger that.",
+            "Understood.",
+            "Confirmed.",
+            "Data received.",
+            "Processing complete.",
+            "Acknowledged, Cooper."
+        ];
+
+        const wittyReplies = [
+            "Sure, but don't expect me to laugh.",
+            "You're the boss, cowboy.",
+            "I'll add it to my non-existent diary.",
+            "Sarcasm mode... enabled.",
+            "I'm 90% humor, but 100% efficiency."
+        ];
 
         function addMessage(sender, text) {
             const div = document.createElement('div');
@@ -141,30 +159,25 @@
 
         function sendToTARS(message) {
             const humorLevel = humorSlider.value;
-            let funnyReply;
+            let reply;
 
             if (humorLevel >= 70) {
-                funnyReply = `Humor set to ${humorLevel}%. Initiating witty response. Here's a joke: "Why don't astronauts get hungry after being blasted into space? Because they've just had a big launch."`;
-            } else if (humorLevel <= 30) {
-                funnyReply = `"Humor level ${humorLevel}%. Reply: Acknowledged. Processing complete."`;
+                reply = wittyReplies[Math.floor(Math.random() * wittyReplies.length)];
             } else {
-                funnyReply = `"Humor at ${humorLevel}%. Responding with moderate sarcasm."`;
+                reply = seriousReplies[Math.floor(Math.random() * seriousReplies.length)];
             }
 
-            addMessage('tars', funnyReply);
-            speak(funnyReply);
+            addMessage('tars', reply);
+            speak(reply);
         }
 
         function speak(text) {
             const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(text);
-            
-            // TARS voice settings
-            utterance.pitch = 0.4; // Lower pitch, monotone
-            utterance.rate = 0.85; // Slower, calm delivery
+            utterance.pitch = 0.4;
+            utterance.rate = 0.85;
             utterance.volume = 1;
 
-            // Pick a robotic voice
             const voices = synth.getVoices();
             let tarsVoice = voices.find(voice => 
                 voice.name.includes("Google US English") ||
@@ -178,17 +191,14 @@
             synth.speak(utterance);
         }
 
-        // Enter key shortcut for input
         userInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 sendText();
             }
         });
 
-        // Auto-focus the text box on load
         window.onload = () => {
             userInput.focus();
-            // Preload voices to avoid delay
             window.speechSynthesis.getVoices();
         };
     </script>
