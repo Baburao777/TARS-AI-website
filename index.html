@@ -16,9 +16,11 @@
             justify-content: center;
             height: 100vh;
             overflow: hidden;
+            margin: 0;
         }
         h1 {
             animation: flicker 2s infinite alternate;
+            margin-bottom: 10px;
         }
         #chat {
             width: 80%;
@@ -26,7 +28,7 @@
             border: 2px solid #45a29e;
             padding: 20px;
             height: 300px;
-            overflow-y: scroll;
+            overflow-y: auto;
             margin-bottom: 20px;
             background: rgba(0, 0, 0, 0.3);
             box-shadow: 0 0 15px #45a29e;
@@ -41,7 +43,7 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 0 10px #45a29e;
-            margin: 10px;
+            margin: 10px 5px;
             transition: 0.3s ease;
         }
         button:hover {
@@ -63,10 +65,12 @@
         .input-container {
             display: flex;
             gap: 10px;
+            width: 80%;
+            max-width: 600px;
         }
         input[type=text] {
             padding: 10px;
-            width: 70%;
+            flex: 1;
             background: #1f2833;
             color: #66fcf1;
             border: 1px solid #45a29e;
@@ -137,7 +141,16 @@
 
         function sendToTARS(message) {
             const humorLevel = humorSlider.value;
-            const funnyReply = `At ${humorLevel}% humor: "${message}" sounds like a classified joke to me. 🤖`;
+            let funnyReply;
+
+            if (humorLevel >= 70) {
+                funnyReply = `At ${humorLevel}% humor: "${message}" sounds like you're trying to make me laugh... it's working! 😂`;
+            } else if (humorLevel <= 30) {
+                funnyReply = `At ${humorLevel}% humor: "Acknowledged. Executing as per protocol."`;
+            } else {
+                funnyReply = `At ${humorLevel}% humor: "Noted, but with a hint of sarcasm." 😏`;
+            }
+
             addMessage('tars', funnyReply);
             speak(funnyReply);
         }
@@ -156,6 +169,11 @@
                 sendText();
             }
         });
+
+        // Auto-focus the text box on load
+        window.onload = () => {
+            userInput.focus();
+        };
     </script>
 </body>
 
