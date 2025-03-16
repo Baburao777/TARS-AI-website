@@ -144,11 +144,11 @@
             let funnyReply;
 
             if (humorLevel >= 70) {
-                funnyReply = `At ${humorLevel}% humor: "${message}" sounds like you're trying to make me laugh... it's working! 😂`;
+                funnyReply = `Humor set to ${humorLevel}%. Initiating witty response. Here's a joke: "Why don't astronauts get hungry after being blasted into space? Because they've just had a big launch."`;
             } else if (humorLevel <= 30) {
-                funnyReply = `At ${humorLevel}% humor: "Acknowledged. Executing as per protocol."`;
+                funnyReply = `"Humor level ${humorLevel}%. Reply: Acknowledged. Processing complete."`;
             } else {
-                funnyReply = `At ${humorLevel}% humor: "Noted, but with a hint of sarcasm." 😏`;
+                funnyReply = `"Humor at ${humorLevel}%. Responding with moderate sarcasm."`;
             }
 
             addMessage('tars', funnyReply);
@@ -158,8 +158,23 @@
         function speak(text) {
             const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.pitch = 0.7;
-            utterance.rate = 0.95;
+            
+            // TARS voice settings
+            utterance.pitch = 0.4; // Lower pitch, monotone
+            utterance.rate = 0.85; // Slower, calm delivery
+            utterance.volume = 1;
+
+            // Pick a robotic voice
+            const voices = synth.getVoices();
+            let tarsVoice = voices.find(voice => 
+                voice.name.includes("Google US English") ||
+                voice.name.includes("Microsoft David") ||
+                voice.name.toLowerCase().includes("english")
+            );
+            if (tarsVoice) {
+                utterance.voice = tarsVoice;
+            }
+
             synth.speak(utterance);
         }
 
@@ -173,6 +188,8 @@
         // Auto-focus the text box on load
         window.onload = () => {
             userInput.focus();
+            // Preload voices to avoid delay
+            window.speechSynthesis.getVoices();
         };
     </script>
 </body>
