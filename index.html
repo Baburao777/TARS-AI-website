@@ -1,25 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- TARS AI Website -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TARS AI Interface</title>
+    <title>TARS AI Terminal</title>
     <style>
-        body { background: #0b0c10; color: #66fcf1; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #chat { width: 80%; max-width: 600px; border: 2px solid #45a29e; padding: 20px; height: 400px; overflow-y: scroll; margin-bottom: 20px; }
-        .user { color: #ffffff; }
-        .tars { color: #66fcf1; }
-        button { padding: 10px 20px; background: #45a29e; border: none; cursor: pointer; font-weight: bold; }
+        body {
+            background: #0b0c10;
+            color: #66fcf1;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            animation: flicker 2s infinite alternate;
+        }
+        #chat {
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #45a29e;
+            padding: 20px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px #45a29e;
+            transition: 0.5s;
+        }
+        .user { color: #ffffff; margin-bottom: 10px; }
+        .tars { color: #66fcf1; margin-bottom: 10px; }
+        button {
+            padding: 10px 20px;
+            background: #45a29e;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 10px #45a29e;
+            margin: 10px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #66fcf1;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .slider-container label {
+            font-size: 14px;
+        }
+        input[type=range] {
+            width: 200px;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        input[type=text] {
+            padding: 10px;
+            width: 70%;
+            background: #1f2833;
+            color: #66fcf1;
+            border: 1px solid #45a29e;
+            font-family: 'Courier New', monospace;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
+
 <body>
-    <h1>TARS AI Terminal</h1>
+    <h1>TARS AI Terminal 🛰️</h1>
+
     <div id="chat"></div>
-    <button onclick="startListening()">🎙️ Speak to TARS</button>
+
+    <div class="slider-container">
+        <label for="humor">Humor Level:</label>
+        <input type="range" id="humor" min="0" max="100" value="90">
+        <span id="humor-value">90%</span>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your command to TARS">
+        <button onclick="sendText()">Send</button>
+    </div>
+
+    <button onclick="startListening()">🎙️ Or Speak to TARS</button>
 
     <script>
         const chat = document.getElementById('chat');
+        const humorSlider = document.getElementById('humor');
+        const humorValue = document.getElementById('humor-value');
+        const userInput = document.getElementById('userInput');
+
+        humorSlider.addEventListener('input', () => {
+            humorValue.textContent = `${humorSlider.value}%`;
+        });
 
         function addMessage(sender, text) {
             const div = document.createElement('div');
@@ -27,6 +113,14 @@
             div.textContent = `${sender === 'user' ? 'You' : 'TARS'}: ${text}`;
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
+        }
+
+        function sendText() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            addMessage('user', message);
+            userInput.value = '';
+            sendToTARS(message);
         }
 
         function startListening() {
@@ -41,12 +135,11 @@
             };
         }
 
-        async function sendToTARS(message) {
-            // Humor level hardcoded to 90%
-            const humorLevel = 0.9;
-            const reply = `Sure thing, with 90% humor: "${message}" sounds like a joke to me! 😂`;
-            addMessage('tars', reply);
-            speak(reply);
+        function sendToTARS(message) {
+            const humorLevel = humorSlider.value;
+            const funnyReply = `At ${humorLevel}% humor: "${message}" sounds like a classified joke to me. 🤖`;
+            addMessage('tars', funnyReply);
+            speak(funnyReply);
         }
 
         function speak(text) {
@@ -56,6 +149,14 @@
             utterance.rate = 0.95;
             synth.speak(utterance);
         }
+
+        // Enter key shortcut for input
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendText();
+            }
+        });
     </script>
 </body>
+
 </html>
